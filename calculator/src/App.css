@@ -1,0 +1,22 @@
+.calculatorGrid {
+    background-color: #4F4F51;
+    opacity: 90%;
+    display: grid;
+    grid-template: 2fr repeat(5, 1fr) / repeat(4, 1fr);
+}
+button {
+    color: white;
+    background-color: #7C7C7E;
+}
+.topRow {
+    background-color: #606062;
+}
+.largerButtons {
+    grid-column: 1 / 3;
+}
+.operators{
+    background-color: #FF9F0B;
+    opacity: 100%;
+}
+/*make operators class orange*/
+
