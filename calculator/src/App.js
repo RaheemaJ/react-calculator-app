@@ -7,8 +7,8 @@ function App(){
                 <div className="previousValue">123,400</div>
                 <div className="currentValue">6+5</div>
             </div>
-            <button className="largerButtons topRow">AC</button>
-            <button className="topRow">DEL</button>
+            <button className="largerButtons">AC</button>
+            <button>DEL</button>
             <button className="operators">÷</button>
             <button className="button">7</button>
             <button>8</button>
