@@ -10,7 +10,7 @@ function App(){
             <button className="largerButtons topRow">AC</button>
             <button className="topRow">DEL</button>
             <button className="operators">÷</button>
-            <button>7</button>
+            <button className="button">7</button>
             <button>8</button>
             <button>9</button>
             <button className="operators">×</button>
