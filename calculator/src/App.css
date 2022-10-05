@@ -4,7 +4,7 @@
     font-family: sans-serif;
     font-size: 1.9rem;
 }
-.calculatorGrid {
+.calculator {
     background-color: #848693;
     display: grid;
     grid-template: minmax(5rem, auto) repeat(5, 1fr) / repeat(4, 1fr);
@@ -13,25 +13,28 @@
 button {
     background-color:#E0E0E0;
     border: none;
+    cursor: pointer;
 }
-.outputBox {
+.outputPanel {
     grid-column: 1 / 5;
     display: flex;
     align-items:flex-end;
     flex-direction: column;
+    word-wrap:break-word;
+    word-break: break-all;
 }
-.outputBox .previousValue {
+.outputPanel .previousCalculation {
     color: rgba(255, 255, 255, .75);
     margin-right: 2rem;
     margin-top: 0.7rem;
     font-size: 1rem;
 }
-.outputBox .currentValue {
+.outputPanel .currentCalculation {
     color:white;
     margin-right: 2rem;
     font-size: 2.2rem;
 }
-.calculatorGrid .largerButtons {
+.calculator .largerButtons {
     grid-column: 1 / 3;
 }
 .operators{
@@ -42,7 +45,7 @@ button {
     * {
         font-size: 1.5rem;
     }
-    .outputBox .previousValue {
+    .outputPanel .previousCalculation {
         font-size: 0.8rem;
     }
 }
@@ -50,7 +53,7 @@ button {
     * {
         font-size: 1.2rem;
     }
-    .outputBox .previousValue {
+    .outputPanel .previousCalculation {
         font-size: 0.7rem;
     }
 }
