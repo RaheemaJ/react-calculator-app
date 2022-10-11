@@ -4,82 +4,86 @@ import { useState } from 'react';
 /*
  when cleaning up code and sorting redux, maybe need to move all these functions 
  into components folder and turn them into function components
+
  */
 //should i create a test for this??
-//add +/- button
+
 
 function App(){
-    const[currentCalculation, setCurrentCalculation] = useState('')
+    const[currentCalculation, setCurrentCalculation] = useState('0')
     const[previousCalculation, setPreviousCalculation] = useState('')
-    const operators = ['-', '+', '÷', '×', '%',];
+    const operators = ['-', '+', '÷', '×', '%'];
     let expression = '';
 
+    //when the AC button is pressed, this will clear past and current calculations
     const clear = () => {
-        setCurrentCalculation(0);
-        setPreviousCalculation(0);
+        setCurrentCalculation('0');
+        setPreviousCalculation(' ');
     }
 
     const deleteLastDigit = () => {
         setCurrentCalculation(currentCalculation.slice(0, -1))
     }
-  
-    /*
-    code functionality idea for +/- button
-    const changeSign = () => {
-        parseInt(currentCalculation) < 0 ? setCurrentCalculation(-Math.abs(currentCalculation)) : setCurrentCalculation(Math.abs(currentCalculation))
-    }*/
+
+    //adds a digit, prevents two .'s in the same expression and restarts calculations when a new digit is pressed and replaces 0 from AC
     const addDigits = (newDigit) => {
-        if(currentCalculation === 0 || previousCalculation.includes('=')){
+        if((currentCalculation === '0' && newDigit !== '.') || previousCalculation.includes('=')){
             setPreviousCalculation(' ')
             setCurrentCalculation(newDigit);
-        } 
+        }
         else if(currentCalculation.includes('.') && newDigit==='.'){
             return;
         }
-        /*else if(currentCalculation === 0 && newDigit==='.'){
+        else if((currentCalculation === ' ') && newDigit==='.'){
             setCurrentCalculation('0' + newDigit);
-        }*///only use this if 0 doesnt add before decimal
+        }
         else{
             setCurrentCalculation(currentCalculation + newDigit);
         }
     }
 
-    /*this checks if the new digit entered is an operatio and if it is, 
-    puts the old digit and the operator into the previousCalculation 
-    and then zeros the current calc
+    /*this checks if the new digit entered is an operator and if it is, 
+    puts the old digit and the operator into the previousCalculation
+     and then zeros the current calc
     */
     const addOperator = (newDigit) => {
         if (operators.includes(newDigit)) {
             setPreviousCalculation(currentCalculation + ' ' + newDigit);
-            setCurrentCalculation(' ');
+            setCurrentCalculation(' ')
         }
     }
-    /*this sets the previous calcuation to our full expression*/
+    /* when equals is clicked, sets expression to our full calculation,
+     then calculates the value*/
     const onEquals = () => {
-        expression = previousCalculation + ' ' + currentCalculation + ' = ';
-        if(expression.includes('÷')){
-            setCurrentCalculation(previousCalculation.slice(0, -1)/currentCalculation);
+        if(previousCalculation.includes('=')){
+            return;
         }
-        else if(expression.includes('×')){
+        else{
+            expression = previousCalculation + ' ' + currentCalculation + ' = ';
+            if(expression.includes('÷')){
+                setCurrentCalculation(previousCalculation.slice(0, -1)/currentCalculation);
+            }
+            else if(expression.includes('×')){
             setCurrentCalculation(previousCalculation.slice(0, -1)*currentCalculation)
-        }
-        else if(expression.includes('+')){
-            setCurrentCalculation(parseFloat(previousCalculation.slice(0, -1))+parseFloat(currentCalculation))
-        }
-        else if(expression.includes('-')){
-            setCurrentCalculation(previousCalculation.slice(0, -1)-currentCalculation)
-        }
-        else if(expression.includes('%')){
-            setCurrentCalculation(previousCalculation.slice(0, -1)%currentCalculation)
-        }
+            }
+            else if(expression.includes('+')){
+                setCurrentCalculation(parseFloat(previousCalculation.slice(0, -1))+parseFloat(currentCalculation))
+            }
+            else if(expression.includes('-')){
+                setCurrentCalculation(previousCalculation.slice(0, -1)-currentCalculation)
+            }
+            else if(expression.includes('%')){
+                setCurrentCalculation(previousCalculation.slice(0, -1)%currentCalculation)
+            }
         setPreviousCalculation(expression);
+    }
     }
 
     return (
         <div className="calculator"> 
             <div className="outputPanel">
                 <div className="previousCalculation">{previousCalculation || null}</div>
-                <div className="currentCalculation">{currentCalculation || "0"}</div> 
+                <div className="currentCalculation">{currentCalculation || '0'}</div> 
             </div>
             <button onClick={() => clear()}>AC</button>
             <button onClick={() => deleteLastDigit()}>DEL</button>
@@ -97,7 +101,7 @@ function App(){
             <button onClick={() => addDigits('2')}>2</button>
             <button onClick={() => addDigits('3')}>3</button>
             <button onClick={() => addOperator('+')} className="operators">+</button>
-            <button className="largerButtons" onClick={() => addDigits('0')}>0</button>
+            <button onClick={() => addDigits('0')} className="largerButtons">0</button>
             <button onClick={() => addDigits('.')}>.</button>
             <button onClick={() => onEquals()} className="operators">=</button>
         </div>
