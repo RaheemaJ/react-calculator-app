@@ -4,7 +4,6 @@ import { useState } from 'react';
 /*
  when cleaning up code and sorting redux, maybe need to move all these functions 
  into components folder and turn them into function components
-
  */
 //should i create a test for this??
 
@@ -14,6 +13,7 @@ function App(){
     const[previousCalculation, setPreviousCalculation] = useState('')
     const operators = ['-', '+', '÷', '×', '%'];
     let expression = '';
+    let newNum = '';
 
     //when the AC button is pressed, this will clear past and current calculations
     const clear = () => {
@@ -21,8 +21,12 @@ function App(){
         setPreviousCalculation(' ');
     }
 
-    const deleteLastDigit = () => {
-        setCurrentCalculation(currentCalculation.slice(0, -1))
+    const changeSign = () => {
+        if(currentCalculation==='0')
+            return;
+        else
+            newNum = (0-currentCalculation).toString()
+            setCurrentCalculation(newNum)
     }
 
     //adds a digit, prevents two .'s in the same expression and restarts calculations when a new digit is pressed and replaces 0 from AC
@@ -86,7 +90,7 @@ function App(){
                 <div className="currentCalculation">{currentCalculation || '0'}</div> 
             </div>
             <button onClick={() => clear()}>AC</button>
-            <button onClick={() => deleteLastDigit()}>DEL</button>
+            <button onClick={() => changeSign()}>+/-</button>
             <button onClick={() => addOperator('%')}>%</button>
             <button onClick={() => addOperator('÷')} className="operators">÷</button>
             <button onClick={() => addDigits('7')}>7</button>
