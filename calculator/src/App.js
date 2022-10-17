@@ -1,113 +1,142 @@
 import './App.css';
-import { useState } from 'react';
+import { useReducer } from 'react';
+import DigitButton from './Components/DigitButtons';
+import OperatorButton from './Components/OperatorButtons'
+
 
 /*
- when cleaning up code and sorting redux, maybe need to move all these functions 
- into components folder and turn them into function components
+eveerything works except for decimal poiunt is being weird
+
  */
 //should i create a test for this??
+const operators = ['-', '+', '÷', '×', '%'];
+let expression = '';
+let newNum = '';
 
 
-function App(){
-    const[currentCalculation, setCurrentCalculation] = useState('0')
-    const[previousCalculation, setPreviousCalculation] = useState('')
-    const operators = ['-', '+', '÷', '×', '%'];
-    let expression = '';
-    let newNum = '';
+export const ACTIONS = {
+    CLEAR: 'clear',
+    CHANGE_SIGN: 'change-sign',
+    ADD_DIGIT: 'add_digit',
+    ADD_OPERATOR: 'add_operator',
+    EQUALS: 'equals'
+}
 
-    //when the AC button is pressed, this will clear past and current calculations
-    const clear = () => {
-        setCurrentCalculation('0');
-        setPreviousCalculation(' ');
-    }
-
-    const changeSign = () => {
-        if(currentCalculation==='0')
-            return;
-        else
-            newNum = (0-currentCalculation).toString()
-            setCurrentCalculation(newNum)
-    }
-
-    //adds a digit, prevents two .'s in the same expression and restarts calculations when a new digit is pressed and replaces 0 from AC
-    const addDigits = (newDigit) => {
-        if((currentCalculation === '0' && newDigit !== '.') || previousCalculation.includes('=')){
-            setPreviousCalculation(' ')
-            setCurrentCalculation(newDigit);
-        }
-        else if(currentCalculation.includes('.') && newDigit==='.'){
-            return;
-        }
-        else if((currentCalculation === ' ') && newDigit==='.'){
-            setCurrentCalculation('0' + newDigit);
-        }
-        else{
-            setCurrentCalculation(currentCalculation + newDigit);
-        }
-    }
-
-    /*this checks if the new digit entered is an operator and if it is, 
-    puts the old digit and the operator into the previousCalculation
-     and then zeros the current calc
-    */
-    const addOperator = (newDigit) => {
-        if (operators.includes(newDigit)) {
-            setPreviousCalculation(currentCalculation + ' ' + newDigit);
-            setCurrentCalculation(' ')
-        }
-    }
-    /* when equals is clicked, sets expression to our full calculation,
-     then calculates the value*/
-    const onEquals = () => {
-        if(previousCalculation.includes('=')){
-            return;
-        }
-        else{
-            expression = previousCalculation + ' ' + currentCalculation + ' = ';
-            if(expression.includes('÷')){
-                setCurrentCalculation(previousCalculation.slice(0, -1)/currentCalculation);
+function reducer(state, {type, payload}) {
+    switch(type) {
+        case ACTIONS.CLEAR: 
+            return {
+                currentCalculation: `${'0'}`,
+                previousCalculation: `${' '}`
             }
-            else if(expression.includes('×')){
-            setCurrentCalculation(previousCalculation.slice(0, -1)*currentCalculation)
+        case ACTIONS.CHANGE_SIGN: 
+            if(state.currentCalculation ==='0') {
+                return state
             }
-            else if(expression.includes('+')){
-                setCurrentCalculation(parseFloat(previousCalculation.slice(0, -1))+parseFloat(currentCalculation))
+            else {
+                newNum = (0-state.currentCalculation).toString()
+                return {
+                    currentCalculation: `${newNum}`
+                }
             }
-            else if(expression.includes('-')){
-                setCurrentCalculation(previousCalculation.slice(0, -1)-currentCalculation)
+        case ACTIONS.ADD_DIGIT: 
+            if((state.currentCalculation === '0' && payload.digit !== '.') || state.previousCalculation.includes('=')) { 
+                //this is possible causing issues, some issues with decimals and zeros on the second half od the operation
+                return {
+                    previousCalculation: `${' '}`,
+                    currentCalculation: `${payload.digit}`
+                }
             }
-            else if(expression.includes('%')){
-                setCurrentCalculation(previousCalculation.slice(0, -1)%currentCalculation)
+            else if(state.currentCalculation.includes('.') && payload.digit==='.') {
+                return state;
             }
-        setPreviousCalculation(expression);
+            else if((state.currentCalculation === ' ') && payload.digit==='.') {
+                return {
+                    currentCalculation: `${'0' + payload.digit}`
+                }
+            }
+            else {
+                return {
+                    ...state,
+                    currentCalculation: `${state.currentCalculation + payload.digit}`
+                }
+            }
+        case ACTIONS.ADD_OPERATOR: 
+            if (operators.includes(payload.digit)) {
+                return {
+                    previousCalculation: `${state.currentCalculation + ' ' + payload.digit}`,
+                    currentCalculation: `${' '}`
+                }
+            }
+        case ACTIONS.EQUALS: 
+            if(state.previousCalculation.includes('=')) { 
+                return state
+            }
+            else {
+                expression = state.previousCalculation + ' ' + state.currentCalculation + ' = ';
+                if(expression.includes('÷')) {
+                    return {
+                        currentCalculation: `${state.previousCalculation.slice(0, -1)/state.currentCalculation}`,
+                        previousCalculation: `${expression}`
+                    }
+                }
+                else if(expression.includes('×')) {
+                    return {
+                        currentCalculation: `${state.previousCalculation.slice(0, -1)*state.currentCalculation}`,
+                        previousCalculation: `${expression}`
+                    }
+                }
+                else if(expression.includes('+')) {
+                    return {
+                        currentCalculation: `${parseFloat(state.previousCalculation.slice(0, -1))+parseFloat(state.currentCalculation)}`,
+                        previousCalculation: `${expression}`
+                    }
+                }
+                else if(expression.includes('-')) {
+                    return {
+                        currentCalculation: `${state.previousCalculation.slice(0, -1)-state.currentCalculation}`,
+                        previousCalculation: `${expression}`
+                    }
+                }
+                else if(expression.includes('%')) {
+                    return {
+                        currentCalculation: `${state.previousCalculation.slice(0, -1)%state.currentCalculation}`,
+                        previousCalculation: `${expression}`
+                    }
+                }
+            }
     }
-    }
+}
 
-    return (
+function App() {
+    const initialState = {currentCalculation: '0', previousCalculation: ' '}
+    const[{currentCalculation, previousCalculation}, dispatch] = useReducer(reducer, initialState)
+
+    return ( //check if the ors can be removed 
         <div className="calculator"> 
             <div className="outputPanel">
-                <div className="previousCalculation">{previousCalculation || null}</div>
+                <div className="previousCalculation">{previousCalculation || ' '}</div>
                 <div className="currentCalculation">{currentCalculation || '0'}</div> 
             </div>
-            <button onClick={() => clear()}>AC</button>
-            <button onClick={() => changeSign()}>+/-</button>
-            <button onClick={() => addOperator('%')}>%</button>
-            <button onClick={() => addOperator('÷')} className="operators">÷</button>
-            <button onClick={() => addDigits('7')}>7</button>
-            <button onClick={() => addDigits('8')}>8</button>
-            <button onClick={() => addDigits('9')}>9</button>
-            <button onClick={() => addOperator('×')} className="operators">×</button>
-            <button onClick={() => addDigits('4')}>4</button>
-            <button onClick={() => addDigits('5')}>5</button>
-            <button onClick={() => addDigits('6')}>6</button>
-            <button onClick={() => addOperator('-')} className="operators">-</button>
-            <button onClick={() => addDigits('1')}>1</button>
-            <button onClick={() => addDigits('2')}>2</button>
-            <button onClick={() => addDigits('3')}>3</button>
-            <button onClick={() => addOperator('+')} className="operators">+</button>
-            <button onClick={() => addDigits('0')} className="largerButtons">0</button>
-            <button onClick={() => addDigits('.')}>.</button>
-            <button onClick={() => onEquals()} className="operators">=</button>
+            <button onClick={() => dispatch({type: ACTIONS.CLEAR})} >AC</button>
+            <button onClick={() => dispatch({type: ACTIONS.CHANGE_SIGN})} >+/-</button>
+            <button onClick={() => dispatch({type: ACTIONS.ADD_OPERATOR, payload: {digit:'%'}})} >%</button>
+            <OperatorButton digit='÷' dispatch={dispatch} />
+            <DigitButton digit='7' dispatch={dispatch} />
+            <DigitButton digit='8' dispatch={dispatch} />
+            <DigitButton digit='9' dispatch={dispatch} />
+            <OperatorButton digit ='×' dispatch={dispatch} />
+            <DigitButton digit='4' dispatch={dispatch} />
+            <DigitButton digit='5' dispatch={dispatch} />
+            <DigitButton digit='6' dispatch={dispatch} />
+            <OperatorButton digit ='-' dispatch={dispatch} />
+            <DigitButton digit='1' dispatch={dispatch} />
+            <DigitButton digit='2' dispatch={dispatch} />
+            <DigitButton digit='3' dispatch={dispatch} />
+            <OperatorButton digit='+' dispatch={dispatch} />
+            <button digit='0' onClick={() => dispatch({type: ACTIONS.ADD_DIGIT, payload: {digit:'0'}})} className='largerButtons'>0</button>
+            <DigitButton digit='.' dispatch={dispatch} />
+            <button onClick={() => dispatch({type: ACTIONS.EQUALS})} className="operators">=</button>
         </div>
     )
 }
