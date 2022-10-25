@@ -36,6 +36,7 @@ function reducer(state, {type, payload}) {
             else {
                 newNum = (0-state.currentCalculation).toString()
                 return {
+                    ...state,
                     currentCalculation: `${newNum}`
                 }
             }
@@ -52,6 +53,7 @@ function reducer(state, {type, payload}) {
             }
             else if((state.currentCalculation === ' ') && payload.digit==='.') {
                 return {
+                    ...state,
                     currentCalculation: `${'0' + payload.digit}`
                 }
             }
@@ -69,7 +71,7 @@ function reducer(state, {type, payload}) {
                 }
             }
         case ACTIONS.EQUALS: 
-            if(state.previousCalculation.includes('=')) { 
+            if(state.previousCalculation.includes('=') || state.previousCalculation === ' ') { 
                 return state
             }
             else {
@@ -112,11 +114,11 @@ function App() {
     const initialState = {currentCalculation: '0', previousCalculation: ' '}
     const[{currentCalculation, previousCalculation}, dispatch] = useReducer(reducer, initialState)
 
-    return ( //check if the ors can be removed 
+    return (
         <div className="calculator"> 
             <div className="outputPanel">
-                <div className="previousCalculation">{previousCalculation || ' '}</div>
-                <div className="currentCalculation">{currentCalculation || '0'}</div> 
+                <div className="previousCalculation">{previousCalculation}</div>
+                <div className="currentCalculation">{currentCalculation}</div> 
             </div>
             <button onClick={() => dispatch({type: ACTIONS.CLEAR})} >AC</button>
             <button onClick={() => dispatch({type: ACTIONS.CHANGE_SIGN})} >+/-</button>
