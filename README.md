@@ -2,7 +2,7 @@
 This is a simple calculator built using the REACT.JS library
 
 ## Try it
-raheemaj-react-calculator-app.netlify.app
+https://raheemaj-react-calculator-app.netlify.app
 
 ## Install and use
 `npm install && npm start`
