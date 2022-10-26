@@ -70,6 +70,7 @@ function reducer(state, {type, payload}) {
                     currentCalculation: `${' '}`
                 }
             }
+            break;
         case ACTIONS.EQUALS: 
             if(state.previousCalculation.includes('=') || state.previousCalculation === ' ') { 
                 return state
@@ -106,7 +107,10 @@ function reducer(state, {type, payload}) {
                         previousCalculation: `${expression}`
                     }
                 }
+                break;
             }
+            default:
+                return state
     }
 }
 
